@@ -65,6 +65,11 @@ def index():
     return send_from_directory(app.static_folder, "index.html")
 
 
+@app.get("/form")
+def form():
+    return send_from_directory(app.static_folder, "form.html")
+
+
 @app.post("/api/lookup")
 def lookup():
     data = request.get_json(silent=True) or {}
