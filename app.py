@@ -1,3 +1,4 @@
+import os
 import re
 import threading
 import time
@@ -92,4 +93,4 @@ def lookup():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=12000, threaded=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 12000)), threaded=True)
