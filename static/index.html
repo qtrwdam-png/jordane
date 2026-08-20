@@ -1,315 +1,266 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>الاستعلام عن فاتورة الكهرباء</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --primary: #0d9488;
-      --primary-dark: #0f766e;
-      --primary-light: #14b8a6;
-      --accent: #f59e0b;
-      --bg-grad-start: #0b1c33;
-      --bg-grad-end: #0d9488;
-      --card: #ffffff;
-      --muted: #64748b;
-      --text: #0f172a;
-      --danger: #dc2626;
-      --success: #059669;
-      --radius: 24px;
-      --radius-sm: 14px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0d3b66" />
+<title>الاستعلام عن فاتورة الكهرباء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --primary:#0d3b66;
+    --primary-dark:#092947;
+    --primary-light:#e8f0f8;
+    --accent-green:#1e7d3a;
+    --accent-green-bg:#eaf6ee;
+    --accent-red:#b3261e;
+    --accent-red-bg:#fbebea;
+    --bg:#eef1f4;
+    --card:#ffffff;
+    --border:#d7dde3;
+    --text:#1c2733;
+    --muted:#5b6b7c;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Tajawal',Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    line-height:1.5;
+  }
 
-    body {
-      font-family: 'Tajawal', system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
-      position: relative;
-      overflow-x: hidden;
-    }
+  header{
+    background:var(--primary);
+    color:#fff;
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    box-shadow:0 1px 0 rgba(0,0,0,.08);
+  }
+  header .logo{
+    width:36px;height:36px;border-radius:8px;
+    background:rgba(255,255,255,.14);
+    display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  header .logo svg{ width:19px;height:19px; }
+  header .htext h1{ font-size:.98rem; font-weight:700; }
+  header .htext p{ font-size:.72rem; color:#c7d6e6; margin-top:1px; }
 
-    /* زخرفة الخلفية المتحركة */
-    body::before {
-      content: '';
-      position: absolute;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(20,184,166,0.25) 0%, transparent 70%);
-      top: -200px; left: -200px;
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: absolute;
-      width: 500px; height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
-      bottom: -150px; right: -150px;
-      pointer-events: none;
-    }
+  main{
+    max-width:640px;
+    margin:28px auto;
+    padding:0 16px 40px;
+  }
 
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: 0 40px 80px -15px rgba(2, 8, 23, 0.5), 0 0 0 1px rgba(255,255,255,0.1) inset;
-      width: 100%;
-      max-width: 560px;
-      padding: 40px 34px;
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(10px);
-    }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px 22px;
+  }
+  .card + .card{ margin-top:16px; }
 
-    .logo {
-      width: 70px; height: 70px;
-      margin: 0 auto 18px;
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #d1f8f4, #a7f3ee);
-      border-radius: 22px;
-      box-shadow: 0 8px 20px rgba(13,148,136,0.25);
-    }
-    .logo svg { width: 38px; height: 38px; }
+  h2{ font-size:1.02rem; font-weight:700; color:var(--text); }
+  .card-sub{ font-size:.84rem; color:var(--muted); margin-top:4px; }
 
-    h1 {
-      font-size: 1.6rem; font-weight: 800; text-align: center; color: var(--text);
-      letter-spacing: -0.5px;
-    }
-    .subtitle {
-      text-align: center; color: var(--muted);
-      margin: 10px 0 30px; font-size: .95rem; font-weight: 500;
-    }
+  form{ margin-top:18px; }
+  label{ display:block; font-weight:700; color:#33404c; margin-bottom:7px; font-size:.86rem; }
 
-    label {
-      display: block; font-weight: 700; color: #334155;
-      margin-bottom: 10px; font-size: .95rem;
-    }
+  .field{ display:flex; gap:10px; }
+  input{
+    flex:1; min-width:0;
+    padding:12px 14px;
+    font-family:inherit;
+    font-size:1.02rem; font-weight:700;
+    border:1.5px solid var(--border); border-radius:8px;
+    letter-spacing:2px; text-align:center; direction:ltr;
+    color:var(--text); background:#fbfcfd;
+  }
+  input::placeholder{ color:#9aa7b4; font-weight:400; letter-spacing:1px; }
+  input:focus{
+    outline:none; border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(13,59,102,.14);
+    background:#fff;
+  }
 
-    .field {
-      display: flex; gap: 12px;
-      position: relative;
-    }
-    input {
-      flex: 1;
-      padding: 16px 18px;
-      font-size: 1.15rem;
-      font-family: inherit;
-      font-weight: 700;
-      border: 2px solid #e2e8f0;
-      border-radius: var(--radius-sm);
-      letter-spacing: 3px;
-      text-align: center;
-      direction: ltr;
-      color: var(--text);
-      background: #f8fafc;
-      transition: all .25s ease;
-    }
-    input::placeholder { color: #94a3b8; font-weight: 400; letter-spacing: 2px; }
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: #fff;
-      box-shadow: 0 0 0 5px rgba(13, 148, 136, .15);
-    }
+  button{
+    padding:12px 24px; font-size:.94rem; font-weight:700; font-family:inherit;
+    color:#fff; background:var(--primary);
+    border:none; border-radius:8px; cursor:pointer;
+    white-space:nowrap;
+  }
+  button:hover{ background:var(--primary-dark); }
+  button:disabled{ background:#a9b4bf; cursor:not-allowed; }
+  button:focus-visible, input:focus-visible{ outline:2px solid var(--primary-dark); outline-offset:2px; }
 
-    button {
-      padding: 16px 30px;
-      font-size: 1.05rem;
-      font-weight: 700;
-      font-family: inherit;
-      color: #fff;
-      background: linear-gradient(135deg, var(--primary-light), var(--primary));
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all .2s ease;
-      white-space: nowrap;
-      box-shadow: 0 8px 20px rgba(13,148,136,0.35);
-      position: relative;
-      overflow: hidden;
-    }
-    button:hover {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      transform: translateY(-1px);
-      box-shadow: 0 12px 25px rgba(13,148,136,0.45);
-    }
-    button:active { transform: translateY(0); }
-    button:disabled {
-      background: #cbd5e1;
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .hint {
-      margin-top: 10px; font-size: .82rem; color: var(--muted);
-      display: flex; align-items: center; gap: 5px;
-    }
+  .hint{
+    margin-top:10px; font-size:.78rem; color:var(--muted);
+    display:flex; align-items:flex-start; gap:5px;
+  }
+  .hint svg{ flex:none; width:13px; height:13px; margin-top:2px; }
 
-    .msg {
-      margin-top: 24px; padding: 15px 18px; border-radius: var(--radius-sm);
-      font-weight: 600; display: none; text-align: center;
-      animation: slideDown .3s ease;
-    }
-    .msg.error {
-      display: block; background: #fef2f2; color: var(--danger);
-      border: 1px solid #fecaca;
-    }
-    .msg.info {
-      display: block; background: #eff6ff; color: #1d4ed8;
-      border: 1px solid #bfdbfe;
-    }
+  .msg{
+    margin-top:16px; padding:11px 14px; border-radius:8px;
+    font-weight:500; font-size:.85rem; display:none; text-align:right;
+    border:1px solid transparent;
+  }
+  .msg.error{ display:block; background:var(--accent-red-bg); color:var(--accent-red); border-color:#f1c6c3; }
+  .msg.info{ display:block; background:var(--primary-light); color:var(--primary-dark); border-color:#c7d9ea; }
 
-    .result { margin-top: 26px; display: none; }
+  .result{ margin-top:18px; display:none; }
 
-    .total {
-      background: linear-gradient(135deg, #10b981, #0d9488);
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 22px;
-      text-align: center;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(16,185,129,0.35);
-      position: relative;
-      overflow: hidden;
-    }
-    .total::before {
-      content: '';
-      position: absolute;
-      width: 150px; height: 150px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 50%;
-      top: -50px; right: -50px;
-    }
-    .total .label { color: #d1fae5; font-weight: 700; font-size: 1rem; }
-    .total .value {
-      color: #fff; font-weight: 900; font-size: 2.4rem;
-      margin-top: 6px; direction: ltr; letter-spacing: 0.5px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    .total .currency { font-size: 1.05rem; color: #a7f3d0; font-weight: 700; }
+  .total-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--primary-light);
+    border:1px solid #c7d9ea;
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .total-row .t-label{ font-size:.84rem; font-weight:700; color:var(--primary-dark); }
+  .total-row .t-value{ font-size:1.5rem; font-weight:900; color:var(--primary-dark); direction:ltr; }
+  .total-row .t-value .cur{ font-size:.78rem; font-weight:700; color:var(--primary); margin-inline-start:4px; }
+  .total-row.is-clear{ background:var(--accent-green-bg); border-color:#bfe3c9; }
+  .total-row.is-clear .t-label,
+  .total-row.is-clear .t-value{ color:var(--accent-green); }
 
-    .section-title {
-      font-weight: 800; font-size: 1.05rem; color: var(--text);
-      margin: 22px 0 10px; padding-right: 12px;
-      border-right: 5px solid var(--primary);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .section-title.unpaid { border-right-color: var(--danger); }
-    .section-title.paid { border-right-color: var(--success); }
+  .status-tag{
+    font-size:.68rem; font-weight:700; color:var(--muted);
+    margin-top:8px; display:flex; align-items:center; gap:5px;
+  }
+  .status-tag .dot{ width:6px;height:6px;border-radius:50%; background:#9aa7b4; }
+  .status-tag.live .dot{ background:var(--accent-green); }
 
-    table { width: 100%; border-collapse: collapse; font-size: .84rem; }
-    th, td { padding: 11px 8px; text-align: center; border-bottom: 1px solid #f1f5f9; }
-    th {
-      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-      color: #475569; font-weight: 800; font-size: .8rem;
-      position: sticky; top: 0;
-    }
-    tbody tr { transition: background .15s; }
-    tbody tr:hover { background: #f0fdfa; }
-    tbody tr:last-child td { border-bottom: none; }
+  .section-title{
+    font-weight:700; font-size:.9rem; color:var(--text);
+    margin:20px 0 8px;
+  }
 
-    .table-wrap {
-      max-height: 280px; overflow-y: auto;
-      border: 1px solid #e2e8f0; border-radius: var(--radius-sm);
-      box-shadow: 0 2px 8px rgba(2,8,23,0.04);
-    }
-    .table-wrap::-webkit-scrollbar { width: 8px; }
-    .table-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    .table-wrap::-webkit-scrollbar-track { background: transparent; }
+  .table-wrap{
+    border:1px solid var(--border); border-radius:8px; overflow:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  table{ width:100%; border-collapse:collapse; font-size:.82rem; }
+  th,td{ padding:10px 8px; text-align:center; border-bottom:1px solid #edf0f3; }
+  th{
+    background:#f5f7f9; color:#42505e; font-weight:700; font-size:.78rem;
+    position:sticky; top:0;
+  }
+  tbody tr:nth-child(even){ background:#fafbfc; }
+  tbody tr:last-child td{ border-bottom:none; }
 
-    .spinner {
-      width: 20px; height: 20px;
-      border: 3px solid rgba(255,255,255,.4);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      display: inline-block;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+  .badge-unpaid{
+    display:inline-block; background:var(--accent-red-bg); color:var(--accent-red);
+    font-weight:700; font-size:.74rem; padding:2px 9px; border-radius:5px;
+    border:1px solid #f1c6c3;
+  }
 
-    /* badge لحالة الفاتورة غير المسددة */
-    .badge-unpaid {
-      display: inline-block;
-      background: #fee2e2; color: #b91c1c;
-      font-weight: 700; font-size: .78rem;
-      padding: 3px 10px; border-radius: 20px;
-    }
+  .spinner{
+    width:15px; height:15px; border:2.5px solid rgba(255,255,255,.4);
+    border-top-color:#fff; border-radius:50%; display:inline-block;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
 
-    @media (max-width: 640px) {
-      .card { padding: 28px 22px; }
-      h1 { font-size: 1.35rem; }
-      .field { flex-direction: column; }
-      button { padding: 15px; }
-      input { letter-spacing: 2px; }
+  footer{
+    text-align:center; font-size:.74rem; color:#8894a1;
+    padding:0 16px 24px;
+  }
+
+  @media (max-width:480px){
+    main{ margin:0 auto; padding:0 0 30px; }
+    .card{ border-radius:0; border-left:none; border-right:none; }
+    .field{ flex-direction:column; }
+    button{ width:100%; padding:13px; }
+    .total-row{ flex-direction:column; align-items:flex-start; gap:6px; }
+    .total-row .t-value{ font-size:1.7rem; }
+
+    .table-wrap{ border:none; overflow:visible; }
+    table, thead, tbody, tr, th, td{ display:block; width:100%; }
+    thead{ position:absolute; right:-9999px; }
+    tbody tr{
+      border:1px solid var(--border); border-radius:8px;
+      padding:2px 12px; margin-bottom:8px; background:#fff;
     }
-  </style>
+    td{
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px dashed #edf0f3; padding:9px 2px; text-align:left;
+    }
+    td:last-child{ border-bottom:none; }
+    td::before{
+      content:attr(data-label); font-weight:700; color:var(--muted); font-size:.72rem;
+    }
+  }
+</style>
 </head>
 <body>
-  <div class="card">
+  <header>
     <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
       </svg>
     </div>
-    <h1>الاستعلام عن فاتورة الكهرباء</h1>
-    <p class="subtitle">أدخل رقم الاشتراك المكون من 10 خانات لمعرفة المبلغ المستحق</p>
+    <div class="htext">
+      <h1>الاستعلام عن فاتورة الكهرباء</h1>
+      <p>خدمة عرض بيانات الاشتراك — أداة مستقلة غير تابعة لشركة الكهرباء</p>
+    </div>
+  </header>
 
-    <form id="lookupForm" novalidate>
-      <label for="subscriber">رقم الاشتراك</label>
-      <div class="field">
-        <input id="subscriber" inputmode="numeric" maxlength="10" placeholder="0012345678"
-               autocomplete="off" required />
-        <button type="submit" id="searchBtn">بحث</button>
-      </div>
-      <p class="hint">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
-        </svg>
-        رقم الاشتراك موجود في أعلى فاتورة الكهرباء
-      </p>
-    </form>
+  <main>
+    <div class="card">
+      <h2>استعلام برقم الاشتراك</h2>
+      <p class="card-sub">أدخل رقم الاشتراك المكوّن من 10 خانات، وتجده أعلى فاتورتك.</p>
 
-    <div id="msg" class="msg"></div>
-
-    <div id="result" class="result">
-      <div class="total">
-        <div class="label">مجموع الذمم</div>
-        <div class="value"><span id="totalAmount"></span> <span class="currency">دينار</span></div>
-      </div>
-
-      <div id="unpaidSection" style="display:none">
-        <div class="section-title unpaid">الفواتير غير المسددة</div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr id="unpaidHead"></tr></thead>
-            <tbody id="unpaidBody"></tbody>
-          </table>
+      <form id="lookupForm" novalidate>
+        <label for="subscriber">رقم الاشتراك</label>
+        <div class="field">
+          <input id="subscriber" inputmode="numeric" maxlength="10" placeholder="0012345678"
+                 autocomplete="off" required />
+          <button type="submit" id="searchBtn">بحث</button>
         </div>
-      </div>
+        <p class="hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span>رقم الاشتراك موجود في أعلى فاتورة الكهرباء الورقية أو الإلكترونية</span>
+        </p>
+      </form>
 
-      <div id="paidSection" style="display:none">
-        <div class="section-title paid">الفواتير المسددة</div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr id="paidHead"></tr></thead>
-            <tbody id="paidBody"></tbody>
-          </table>
+      <div id="msg" class="msg"></div>
+
+      <div id="result" class="result">
+        <div class="total-row" id="totalRow">
+          <span class="t-label">مجموع الذمم المستحقة</span>
+          <span class="t-value"><span id="totalAmount"></span><span class="cur">دينار</span></span>
+        </div>
+        <p class="status-tag" id="statusTag"><span class="dot"></span><span id="statusText"></span></p>
+
+        <div id="unpaidSection" style="display:none">
+          <div class="section-title">الفواتير غير المسددة</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr id="unpaidHead"></tr></thead>
+              <tbody id="unpaidBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="paidSection" style="display:none">
+          <div class="section-title">الفواتير المسددة</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr id="paidHead"></tr></thead>
+              <tbody id="paidBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
+
+  <footer>البيانات مصدرها موقع شركة الكهرباء الرسمي، ويُعاد عرضها هنا للتسهيل فقط.</footer>
 
   <script>
     const form = document.getElementById('lookupForm');
@@ -317,6 +268,9 @@
     const btn = document.getElementById('searchBtn');
     const msg = document.getElementById('msg');
     const result = document.getElementById('result');
+    const totalRow = document.getElementById('totalRow');
+    const statusTag = document.getElementById('statusTag');
+    const statusText = document.getElementById('statusText');
 
     input.addEventListener('input', () => {
       input.value = input.value.replace(/\D/g, '').slice(0, 10);
@@ -336,7 +290,7 @@
       document.getElementById(kind + 'Head').innerHTML =
         grid.headers.map((h) => `<th>${h}</th>`).join('');
       document.getElementById(kind + 'Body').innerHTML = grid.rows
-        .map((r) => `<tr>${r.map((c) => `<td>${c === 'غير مسددة' ? `<span class="badge-unpaid">${c}</span>` : c}</td>`).join('')}</tr>`)
+        .map((r) => `<tr>${r.map((c, i) => `<td data-label="${grid.headers[i] || ''}">${c === 'غير مسددة' ? `<span class="badge-unpaid">${c}</span>` : c}</td>`).join('')}</tr>`)
         .join('');
       section.style.display = 'block';
     }
@@ -355,23 +309,31 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>';
 
-      try {
-        // عرض آخر نتيجة معروفة فوراً (إن وجدت) ثم جلب النتيجة الطازجة
-        const snap = await fetch('/api/lookup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscriber, mode: 'snapshot' }),
-        });
-        if (snap.status === 200) {
-          showResult(await snap.json());
-          showMsg('آخر نتيجة معروفة — جاري التحديث من موقع الشركة...', 'info');
-        }
+      // نطلق طلب الـ snapshot (من الكاش) وطلب البيانات الحيّة معاً في نفس
+      // اللحظة بدل انتظار الأول قبل بدء الثاني — الاثنان مستقلّان، فما
+      // في داعي نخسر وقت رحلة شبكة كاملة قبل ما نبدأ الطلب الحقيقي.
+      const liveRequest = fetch('/api/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriber }),
+      });
 
-        const res = await fetch('/api/lookup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscriber }),
-        });
+      fetch('/api/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriber, mode: 'snapshot' }),
+      })
+        .then((snap) => (snap.status === 200 ? snap.json() : null))
+        .then((snapData) => {
+          if (snapData && result.style.display === 'none') {
+            showResult(snapData, true);
+            showMsg('آخر نتيجة معروفة — جاري التحديث من موقع الشركة...', 'info');
+          }
+        })
+        .catch(() => {});
+
+      try {
+        const res = await liveRequest;
         const data = await res.json();
 
         msg.className = 'msg';
@@ -380,7 +342,7 @@
         } else if (data.status === 'no_invoices') {
           showMsg(data.message, 'info');
         } else {
-          showResult(data);
+          showResult(data, false);
         }
       } catch {
         showMsg('تعذر الاتصال بالخادم، تحقق من الشبكة وحاول مجدداً', 'error');
@@ -390,9 +352,17 @@
       }
     });
 
-    function showResult(data) {
-      document.getElementById('totalAmount').textContent =
-        data.total !== null ? data.total : '—';
+    function showResult(data, isStale) {
+      const total = data.total !== null && data.total !== undefined ? data.total : null;
+      document.getElementById('totalAmount').textContent = total !== null ? total : '—';
+
+      const numeric = total !== null ? parseFloat(total) : null;
+      totalRow.classList.toggle('is-clear', numeric === 0);
+
+      const stale = isStale || data.stale;
+      statusTag.classList.toggle('live', !stale);
+      statusText.textContent = stale ? 'من آخر تحديث محفوظ' : 'محدّث الآن من موقع الشركة';
+
       renderTable('unpaid', data.unpaid);
       renderTable('paid', data.paid);
       result.style.display = 'block';
