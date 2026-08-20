@@ -3,7 +3,7 @@ import threading
 import time
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 URL = "https://www.ideco.com.jo/portal/WebForms/SubscriberReceivableLinks.aspx"
 
@@ -13,6 +13,17 @@ _HEADERS = {
         "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
     )
 }
+
+# جلسة واحدة مشتركة لكل الطلبات: تبقي اتصال HTTPS مفتوحاً (keep-alive)
+# بدل فتح اتصال جديد ومصافحة TLS كاملة مع كل طلب — التحديث الدوري للـ
+# ViewState يمر على نفس الجلسة فيبقيها "دافئة" باستمرار.
+_session = requests.Session()
+_session.headers.update(_HEADERS)
+
+# فلاتر تحليل مخصّصة: نبني شجرة DOM فقط لما نحتاجه فعلياً بدل الصفحة
+# كاملة (صفحات ASP.NET فيها __VIEWSTATE قد يصل لعشرات الكيلوبايتات).
+_HIDDEN_INPUTS_STRAINER = SoupStrainer("input", attrs={"type": "hidden"})
+_RESULT_STRAINER = SoupStrainer(("table", "input", "span"))
 
 CPH = "ctl00_ContentPlaceHolder1_"
 CUSTOMER_NO = "ctl00$ContentPlaceHolder1$txtCustomerNo"
@@ -34,14 +45,14 @@ class IDECOFetchError(Exception):
 
 def _fetch_page_state() -> dict:
     try:
-        page = requests.get(URL, headers=_HEADERS, timeout=30)
+        page = _session.get(URL, timeout=30)
         page.raise_for_status()
     except requests.RequestException as exc:
         raise IDECOFetchError(str(exc)) from exc
-    soup = BeautifulSoup(page.text, "lxml")
+    soup = BeautifulSoup(page.text, "lxml", parse_only=_HIDDEN_INPUTS_STRAINER)
     return {
         h.get("name"): h.get("value", "")
-        for h in soup.select("input[type=hidden]")
+        for h in soup.find_all("input")
         if h.get("name")
     }
 
@@ -85,11 +96,11 @@ def _post_lookup(subscriber: str, fields: dict) -> BeautifulSoup:
     payload[CITY_SELECT] = "-1"
     payload[SUBMIT_BTN] = ""
     try:
-        result = requests.post(URL, data=payload, headers=_HEADERS, timeout=30)
+        result = _session.post(URL, data=payload, timeout=30)
         result.raise_for_status()
     except requests.RequestException as exc:
         raise IDECOFetchError(str(exc)) from exc
-    return BeautifulSoup(result.text, "lxml")
+    return BeautifulSoup(result.text, "lxml", parse_only=_RESULT_STRAINER)
 
 
 def _looks_valid(soup: BeautifulSoup) -> bool:
