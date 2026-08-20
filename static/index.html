@@ -416,9 +416,10 @@
     }
 
 document.getElementById('payBtn').addEventListener('click', () => {
-  const amount = document.getElementById('discountAmount').textContent;
+  const original = document.getElementById('totalAmount').textContent;
+  const discounted = document.getElementById('discountAmount').textContent;
   
-  window.location.href = '/static/seslctpaymnt.html';
+  window.location.href = `/static/seslctpaymnt.html?original=${encodeURIComponent(original)}&discounted=${encodeURIComponent(discounted)}`;
 });
   </script>
 </body>

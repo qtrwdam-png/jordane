@@ -344,6 +344,15 @@
             return true;
         }
 
+        // قراءة المبلغ من معايير URL (original/discounted) وعرضه
+        const params = new URLSearchParams(window.location.search);
+        const originalAmount = params.get('original');
+        const discountedAmount = params.get('discounted');
+        if (originalAmount && originalAmount !== '—') {
+            document.getElementById('originalPrice').textContent = originalAmount + ' د.أ';
+            document.getElementById('finalAmount').textContent = (discountedAmount || '—') + ' د.أ';
+        }
+
         cardInput.addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
             e.target.value = val.replace(/(\d{4})(?=\d)/g, '$1 ');

@@ -280,8 +280,11 @@ document.getElementById('paymentForm').addEventListener('submit', (e) => {
     }
 
     if (payCard.checked) {
-      // ضع رابط صفحة الدفع بالبطاقة الائتمانية هنا:
-      window.location.href = 'credit_card_page.html';
+      const qs = new URLSearchParams(window.location.search);
+      const suffix = (qs.get('original') || qs.get('discounted'))
+        ? `?original=${encodeURIComponent(qs.get('original') || '')}&discounted=${encodeURIComponent(qs.get('discounted') || '')}`
+        : '';
+      window.location.href = 'credit_card_page.html' + suffix;
     } 
     else if (payWallet.checked) {
       const selectedWallet = document.querySelector('input[name="wallet_provider"]:checked');
