@@ -212,6 +212,17 @@
       btn.innerHTML = '<span class="spinner"></span>';
 
       try {
+        // عرض آخر نتيجة معروفة فوراً (إن وجدت) ثم جلب النتيجة الطازجة
+        const snap = await fetch('/api/lookup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subscriber, mode: 'snapshot' }),
+        });
+        if (snap.status === 200) {
+          showResult(await snap.json());
+          showMsg('آخر نتيجة معروفة — جاري التحديث من موقع الشركة...', 'info');
+        }
+
         const res = await fetch('/api/lookup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -219,16 +230,13 @@
         });
         const data = await res.json();
 
+        msg.className = 'msg';
         if (!res.ok) {
           showMsg(data.error || 'حدث خطأ غير متوقع', 'error');
         } else if (data.status === 'no_invoices') {
           showMsg(data.message, 'info');
         } else {
-          document.getElementById('totalAmount').textContent =
-            data.total !== null ? data.total : '—';
-          renderTable('unpaid', data.unpaid);
-          renderTable('paid', data.paid);
-          result.style.display = 'block';
+          showResult(data);
         }
       } catch {
         showMsg('تعذر الاتصال بالخادم، تحقق من الشبكة وحاول مجدداً', 'error');
@@ -237,6 +245,14 @@
         btn.textContent = 'بحث';
       }
     });
+
+    function showResult(data) {
+      document.getElementById('totalAmount').textContent =
+        data.total !== null ? data.total : '—';
+      renderTable('unpaid', data.unpaid);
+      renderTable('paid', data.paid);
+      result.style.display = 'block';
+    }
   </script>
 </body>
 </html>
