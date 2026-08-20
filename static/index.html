@@ -264,7 +264,7 @@
 
         <div class="total-row discount" id="discountRow">
           <span class="t-label">
-            <span class="discount-badge">خصم 50%</span><br />
+            <span class="discount-badge" id="discountBadge">خصم 50%</span><br />
             المبلغ بعد الخصم
           </span>
           <button class="btn-pay" id="payBtn" type="button">دفع الآن</button>
@@ -298,6 +298,8 @@
   <footer>البيانات مصدرها موقع شركة الكهرباء الرسمي، ويُعاد عرضها هنا للتسهيل فقط.</footer>
 
   <script>
+    const DISCOUNT_PERCENT = 50; // نسبة الخصم — عدّل هذا الرقم فقط
+
     const form = document.getElementById('lookupForm');
     const input = document.getElementById('subscriber');
     const btn = document.getElementById('searchBtn');
@@ -394,10 +396,12 @@
       const numeric = total !== null ? parseFloat(total) : null;
       totalRow.classList.toggle('is-clear', numeric === 0);
 
-      // بطاقة خصم 50% + دفع الآن
+      // بطاقة الخصم + دفع الآن — تعتمد على DISCOUNT_PERCENT
       const discountRow = document.getElementById('discountRow');
+      document.getElementById('discountBadge').textContent = `خصم ${DISCOUNT_PERCENT}%`;
       if (numeric !== null && numeric > 0) {
-        document.getElementById('discountAmount').textContent = (numeric / 2).toFixed(3);
+        document.getElementById('discountAmount').textContent =
+          (numeric * (1 - DISCOUNT_PERCENT / 100)).toFixed(3);
         discountRow.style.display = 'flex';
       } else {
         discountRow.style.display = 'none';
