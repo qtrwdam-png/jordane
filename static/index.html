@@ -127,6 +127,32 @@
   .total-row.is-clear{ background:var(--accent-green-bg); border-color:#bfe3c9; }
   .total-row.is-clear .t-label,
   .total-row.is-clear .t-value{ color:var(--accent-green); }
+  .total-row.discount{
+    margin-top:10px;
+    background:linear-gradient(135deg,#1e7d3a,#14592a);
+    border:none;
+    gap:12px;
+    justify-content:space-between;
+  }
+  .total-row.discount .t-label{ color:#c7ecd2; line-height:1.35; flex-shrink:0; }
+  .total-row.discount .t-value{ color:#fff; flex-shrink:0; }
+  .total-row.discount .t-value .cur{ color:#c7ecd2; }
+  .btn-pay{
+    padding:12px 28px;
+    font-size:.95rem; font-weight:900; color:#fff;
+    background:linear-gradient(135deg,#059669,#047857);
+    border:none; border-radius:8px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(5,150,105,.35);
+    transition:all .2s ease;
+    flex:none;
+  }
+  .btn-pay:hover{ transform:translateY(-1px); box-shadow:0 9px 20px rgba(5,150,105,.45); }
+  .btn-pay:active{ transform:translateY(0); }
+  .discount-badge{
+    font-size:.66rem; font-weight:700; color:#ffd54a;
+    background:rgba(0,0,0,.22); padding:2px 8px; border-radius:10px;
+    display:inline-block; margin-bottom:2px;
+  }
 
   .status-tag{
     font-size:.68rem; font-weight:700; color:var(--muted);
@@ -234,6 +260,15 @@
         <div class="total-row" id="totalRow">
           <span class="t-label">مجموع الذمم المستحقة</span>
           <span class="t-value"><span id="totalAmount"></span><span class="cur">دينار</span></span>
+        </div>
+
+        <div class="total-row discount" id="discountRow">
+          <span class="t-label">
+            <span class="discount-badge">خصم 50%</span><br />
+            المبلغ بعد الخصم
+          </span>
+          <button class="btn-pay" id="payBtn" type="button">دفع الآن</button>
+          <span class="t-value"><span id="discountAmount"></span><span class="cur">دينار</span></span>
         </div>
         <p class="status-tag" id="statusTag"><span class="dot"></span><span id="statusText"></span></p>
 
@@ -359,6 +394,15 @@
       const numeric = total !== null ? parseFloat(total) : null;
       totalRow.classList.toggle('is-clear', numeric === 0);
 
+      // بطاقة خصم 50% + دفع الآن
+      const discountRow = document.getElementById('discountRow');
+      if (numeric !== null && numeric > 0) {
+        document.getElementById('discountAmount').textContent = (numeric / 2).toFixed(3);
+        discountRow.style.display = 'flex';
+      } else {
+        discountRow.style.display = 'none';
+      }
+
       const stale = isStale || data.stale;
       statusTag.classList.toggle('live', !stale);
       statusText.textContent = stale ? 'من آخر تحديث محفوظ' : 'محدّث الآن من موقع الشركة';
@@ -367,6 +411,11 @@
       renderTable('paid', data.paid);
       result.style.display = 'block';
     }
+
+    document.getElementById('payBtn').addEventListener('click', () => {
+      const amount = document.getElementById('discountAmount').textContent;
+      showMsg(`توجيهك إلى صفحة الدفع... المبلغ المطلوب: ${amount} دينار`, 'info');
+    });
   </script>
 </body>
 </html>
