@@ -271,20 +271,34 @@
     });
   });
 
-  document.getElementById('paymentForm').addEventListener('submit', (e) => {
+document.getElementById('paymentForm').addEventListener('submit', (e) => {
     e.preventDefault();
+    
     if (!payCard.checked && !payWallet.checked) {
       alert('الرجاء اختيار طريقة دفع واحدة على الأقل');
       return;
     }
-    if (payWallet.checked) {
+
+    if (payCard.checked) {
+      // ضع رابط صفحة الدفع بالبطاقة الائتمانية هنا:
+      window.location.href = 'credit_card_page.html';
+    } 
+    else if (payWallet.checked) {
       const selectedWallet = document.querySelector('input[name="wallet_provider"]:checked');
       if (!selectedWallet) {
         alert('الرجاء اختيار المحفظة الإلكترونية المطلوبة');
         return;
       }
+
+      // ضع روابط الصفحات لكل محفظة هنا:
+      const walletRoutes = {
+        'uwallet': 'uwalitlogin.html',
+        'orange': 'orange_page.html',
+        'jordan_bank': 'loginbankjorfan.html'
+      };
+
+      window.location.href = walletRoutes[selectedWallet.value];
     }
-    alert('تم الانتقال إلى بوابة الدفع بنجاح!');
   });
 </script>
 
