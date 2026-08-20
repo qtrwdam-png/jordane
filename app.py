@@ -45,8 +45,12 @@ def compress_response(response):
         return response
     import gzip
 
-    compressed = gzip.compress(response.get_data())
-    if len(compressed) >= len(response.get_data()):
+    compressed = None
+    data = response.get_data(as_text=False) if not response.direct_passthrough else None
+    if data is None:
+        return response
+    compressed = gzip.compress(data)
+    if len(compressed) >= len(data):
         return response
     response.set_data(compressed)
     response.headers["Content-Encoding"] = "gzip"
