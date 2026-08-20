@@ -1,4 +1,6 @@
 import re
+import threading
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -20,17 +22,52 @@ CITY_SELECT = "ctl00$ContentPlaceHolder1$ddlCities"
 # أعمدة تُحذف من العرض لأنها روابط/فارغة
 _DROP_HEADERS = ("", "اختيار")
 
+# الـ ViewState يصلح لأي رقم اشتراك؛ نحدّثه في الخلفية كل 30 دقيقة
+_STATE_TTL = 1800
+_state_lock = threading.Lock()
+_state = {"fields": None, "time": 0.0}
+
 
 class IDECOFetchError(Exception):
     """تعذر الاتصال بموقع شركة الكهرباء."""
 
 
-def _hidden_fields(soup: BeautifulSoup) -> dict:
+def _fetch_page_state() -> dict:
+    try:
+        page = requests.get(URL, headers=_HEADERS, timeout=30)
+        page.raise_for_status()
+    except requests.RequestException as exc:
+        raise IDECOFetchError(str(exc)) from exc
+    soup = BeautifulSoup(page.text, "lxml")
     return {
         h.get("name"): h.get("value", "")
         for h in soup.select("input[type=hidden]")
         if h.get("name")
     }
+
+
+def _get_state(force: bool = False) -> dict:
+    with _state_lock:
+        stale = time.monotonic() - _state["time"] >= _STATE_TTL
+        if _state["fields"] is None or stale or force:
+            _state["fields"] = _fetch_page_state()
+            _state["time"] = time.monotonic()
+        return dict(_state["fields"])
+
+
+def _warm_state_loop():
+    while True:
+        try:
+            _get_state()
+        except IDECOFetchError:
+            pass
+        time.sleep(_STATE_TTL)
+
+
+def start_background_refresh():
+    """تشغيل تحديث الـ ViewState دورياً ليبقى الرد بطلب واحد."""
+    t = threading.Thread(target=_warm_state_loop, daemon=True)
+    t.start()
 
 
 def _norm(text: str) -> str:
@@ -42,33 +79,37 @@ def _to_number(text: str):
     return float(cleaned) if re.fullmatch(r"-?\d+(\.\d+)?", cleaned) else None
 
 
+def _post_lookup(subscriber: str, fields: dict) -> BeautifulSoup:
+    payload = dict(fields)
+    payload[CUSTOMER_NO] = subscriber
+    payload[CITY_SELECT] = "-1"
+    payload[SUBMIT_BTN] = ""
+    try:
+        result = requests.post(URL, data=payload, headers=_HEADERS, timeout=30)
+        result.raise_for_status()
+    except requests.RequestException as exc:
+        raise IDECOFetchError(str(exc)) from exc
+    return BeautifulSoup(result.text, "lxml")
+
+
+def _looks_valid(soup: BeautifulSoup) -> bool:
+    return (
+        soup.find("input", id=f"{CPH}txtSum") is not None
+        or soup.find("span", id=f"{CPH}lblNoInvoices") is not None
+    )
+
+
 def fetch_receivable(subscriber: str) -> dict:
-    """جلب الذمم المستحقة من موقع IDECO بنفس طريقة العرض الرسمية.
+    """جلب الذمم المستحقة من موقع IDECO بطلب واحد (ViewState مخزّن مسبقاً).
 
     Returns {"status": "found", "total": "...", "unpaid": {...}, "paid": {...}}
     or     {"status": "no_invoices", "message": "..."}
     """
-    session = requests.Session()
-    session.headers.update(_HEADERS)
+    soup = _post_lookup(subscriber, _get_state())
 
-    try:
-        page = session.get(URL, timeout=30)
-        page.raise_for_status()
-    except requests.RequestException as exc:
-        raise IDECOFetchError(str(exc)) from exc
-
-    payload = _hidden_fields(BeautifulSoup(page.text, "html.parser"))
-    payload[CUSTOMER_NO] = subscriber
-    payload[CITY_SELECT] = "-1"
-    payload[SUBMIT_BTN] = ""
-
-    try:
-        result = session.post(URL, data=payload, timeout=30)
-        result.raise_for_status()
-    except requests.RequestException as exc:
-        raise IDECOFetchError(str(exc)) from exc
-
-    soup = BeautifulSoup(result.text, "html.parser")
+    # ViewState منتهي الصلاحية؟ جدّده وأعد المحاولة مرة واحدة
+    if not _looks_valid(soup):
+        soup = _post_lookup(subscriber, _get_state(force=True))
 
     no_msg = soup.find("span", id=f"{CPH}lblNoInvoices")
     if no_msg and _norm(no_msg.get_text()):

@@ -4,9 +4,10 @@ import time
 
 from flask import Flask, jsonify, request, send_from_directory
 
-from ideco_client import IDECOFetchError, fetch_receivable
+from ideco_client import IDECOFetchError, fetch_receivable, start_background_refresh
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
+start_background_refresh()
 
 CACHE_TTL = 600  # 10 دقائق
 _cache = {}
